@@ -1,0 +1,76 @@
+from numpy import *
+import operator
+
+
+def createDataSet():
+	group = array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
+	labels = ['A', 'A', 'B', 'B']
+	return group, labels
+
+
+def classify(inX, dataSet, lables, k):
+	dataSetSize = dataSet.shape[0] #第一维是矩阵的行数
+	"""
+	numpy的tile方法: 重复数组inX构建新数组！
+	下面的含义是 对inX矩阵在行方向上重复dataSetSize次，列的方向上重复 1 次
+	eg.    inX = [1, 2, 3]
+	执行完tile(inX, (2, 1)) 返回的结果矩阵为
+	[ [1, 2, 3]
+	  [1, 2, 3] ]
+	"""
+	diffMat = tile(inX, (dataSetSize, 1)) - dataSet
+	sqDiffMat = diffMat**2
+	"""
+	a = mat([ [1,2,3], [3,2,1] ])
+	print(a)
+	print(a.sum()) #返回所有矩阵元素的和 此处返回12
+	print(a.sum(axis=0))
+	print(a.sum(axis=1))
+	print(sum([ [1,2,3], [3,2,1] ], axis=0)) #axis=0 表示列相加，得到行向量
+	print(sum([ [1,2,3], [3,2,1] ], axis=1)) #axis=1 表示行相加，得到列向量
+	"""
+	# 矩阵的每一行所有值相加，返回一个列向量 如上面的a 执行此操作之后 返回[6,6].T
+	sqDistance = sqDiffMat.sum(axis=1)
+	distance = sqDistance**0.5 #得到距离列向量
+	# 按向量内的值从小到大排序，注意返回的是向量下标，比如[9,6,8,5] 排序后返回的是[3,1,2,0]
+	SortedDistIndicies = distance.argsort()
+	classCount = {}
+	for i in range(k):
+		voteIlable = lables[SortedDistIndicies[i]]
+		#dict下面的get()方法返回字典中指定键(key)的值(value)，如果不存在该key，则返回后面的第二个参数0
+		classCount[voteIlable] = classCount.get(voteIlable, 0) + 1
+		# print(classCount)
+		#之后字典为 {'B': 2, 'A': 1}
+	"""
+	sort 与 sorted 区别：
+	sort 是应用在 list 上的方法，sorted 可以对所有可迭代的对象进行排序操作。
+	list 的 sort 方法返回的是对已经存在的列表进行操作，
+	而内建函数 sorted 方法返回的是一个新的 list，而不是在原来的基础上进行的操作。
+	"""
+	#第一个参数：可迭代的对象
+	# key指定可迭代对象中的一个元素来进行排序，这里是根据第二个域，即value的值,也就是按标签出现的次数排序
+	#reverse = True 降序
+	"""
+	operator.itemgetter函数获取的不是值，而是定义了一个函数，通过该函数作用到对象上才能获取值。
+	a = [1,2,3]
+	b=operator.itemgetter(1)
+	print(b(a))
+	print(b)
+	返回：
+		2
+		operator.itemgetter(1)
+	"""
+	SortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
+	print(SortedClassCount)
+	return SortedClassCount[0][0]
+
+"""
+程序返回:
+	[('B', 2), ('A', 1)]
+	B
+"""
+if __name__ == "__main__":
+
+	group, lables = createDataSet();
+	ans = classify([0,0], group, lables, 3)
+	print(ans)
