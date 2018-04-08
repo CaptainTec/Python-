@@ -6,3 +6,4 @@ VBoxManage setextradata "capMac" "VBoxInternal/Devices/efi/0/Config/DmiSystemVer
 VBoxManage setextradata "capMac" "VBoxInternal/Devices/efi/0/Config/DmiBoardProduct" "Iloveapple"
 VBoxManage setextradata "capMac" "VBoxInternal/Devices/smc/0/Config/DeviceKey" "ourhardworkbythesewordsguardedpleasedontsteal(c)AppleComputerInc"
 VBoxManage setextradata "capMac" "VBoxInternal/Devices/smc/0/Config/GetKeyFromRealSMC" 1
+
